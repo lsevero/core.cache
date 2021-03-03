@@ -280,13 +280,13 @@
       not-found))
   (has? [_ item]
     (and (let [[_ t] (get ttl item [0 (- ttl-ms)])]
-           (< (- (System/currentTimeMillis)
+           (< (- (/ (System/nanoTime) 1000000)
                  t)
               ttl-ms))
          (contains? cache item)))
   (hit [this item] this)
   (miss [this item result]
-    (let [now  (System/currentTimeMillis)
+    (let [now  (/ (System/nanoTime) 1000000)
           [kill-old q'] (key-killer-q ttl q ttl-ms now)]
       (TTLCacheQ. (assoc (kill-old cache) item result)
                   (assoc (kill-old ttl) item [gen now])
@@ -294,7 +294,7 @@
                   (unchecked-inc gen)
                   ttl-ms)))
   (seed [_ base]
-    (let [now (System/currentTimeMillis)]
+    (let [now (/ (System/nanoTime) 1000000)]
       (TTLCacheQ. base
                   ;; we seed the cache all at gen, but subsequent entries
                   ;; will get gen+1, gen+2 etc

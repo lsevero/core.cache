@@ -232,14 +232,14 @@
 
 (deftest test-ttl-cache
   (testing "TTL-ness with empty cache"
-    (let [start (System/currentTimeMillis)
+    (let [start (/ (System/nanoTime) 1000000)
           C     (ttl-cache-factory {} :ttl 500)
           C'    (-> C (assoc :a 1) (assoc :b 2))]
       (are [x y] (= x y)
            [[:a 1 true], [:b 2 true]] (map (partial ttl-q-check start 0) (.q C'))
            {:a 1, :b 2}               (.cache C')
            3                          (.gen C')))
-    (let [start (System/currentTimeMillis)
+    (let [start (/ (System/nanoTime) 1000000)
           C     (ttl-cache-factory {} :ttl 500)
           C'    (-> C (assoc :a 1) (assoc :b 2) (sleepy 700) (assoc :c 3))]
       (are [x y] (= x y)
